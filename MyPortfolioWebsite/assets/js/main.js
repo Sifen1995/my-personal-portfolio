@@ -227,3 +227,47 @@
   document.addEventListener('scroll', navmenuScrollspy);
 
 })();
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.querySelector("form"); // Make sure this targets your contact form
+  const loading = document.querySelector(".loading");
+  const errorMessage = document.querySelector(".error-message");
+  const sentMessage = document.querySelector(".sent-message");
+
+  if (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      loading.style.display = "block";
+      errorMessage.style.display = "none";
+      sentMessage.style.display = "none";
+
+      const formData = new FormData(form);
+
+      fetch(form.action, {
+        method: "POST",
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          loading.style.display = "none";
+          if (data.ok || data.success) {
+            sentMessage.style.display = "block";
+            form.reset();
+          } else {
+            errorMessage.textContent = "Oops! Something went wrong.";
+            errorMessage.style.display = "block";
+          }
+        })
+        .catch(error => {
+          loading.style.display = "none";
+          errorMessage.textContent = "An error occurred. Please try again.";
+          errorMessage.style.display = "block";
+        });
+    });
+  }
+});
